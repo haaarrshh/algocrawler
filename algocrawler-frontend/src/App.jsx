@@ -3,6 +3,50 @@ import Editor from '@monaco-editor/react';
 import axios from 'axios';
 import './App.css';
 
+// --- SUB-COMPONENT: RETRO SYNTHESIZER ---
+const playSound = (type) => {
+  // Browsers require a user interaction before they allow sound, 
+  // which is handled since the user has to click "Login" or "Start"!
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContext) return;
+  
+  const ctx = new AudioContext();
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+
+  if (type === 'type') {
+    // Mechanical keyboard "tick"
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(400, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.05);
+    gain.gain.setValueAtTime(0.02, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.05);
+  } else if (type === 'submit') {
+    // Laser / Power-up sound
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(150, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.2);
+    gain.gain.setValueAtTime(0.05, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.2);
+  } else if (type === 'damage') {
+    // 8-bit Crunch / Buzz
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(100, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.3);
+    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.3);
+  }
+};
+
 // --- SUB-COMPONENT: TYPEWRITER LOG ---
 const TypewriterLog = ({ text, type }) => {
   const [displayedText, setDisplayedText] = useState("");
@@ -11,6 +55,7 @@ const TypewriterLog = ({ text, type }) => {
     let i = 0;
     const interval = setInterval(() => {
       setDisplayedText(text.slice(0, i));
+      if (i % 2 === 0) playSound('type'); // Play a tick every other letter
       i++;
       if (i > text.length) clearInterval(interval);
     }, 20);
@@ -40,11 +85,8 @@ function App() {
 
   const scrollRef = useRef(null);
 
-  // Auto-scroll combat log
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
+    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [logs]);
 
   const getAuthHeaders = () => ({ headers: { Authorization: `Bearer ${token}` } });
@@ -55,6 +97,7 @@ function App() {
     e.preventDefault();
     setAuthError('');
     const endpoint = authMode === 'LOGIN' ? '/api/auth/login' : '/api/auth/register';
+    playSound('submit'); // UI interaction sound
     try {
       const res = await axios.post(`http://localhost:5000${endpoint}`, authForm);
       if (authMode === 'REGISTER') {
@@ -68,6 +111,7 @@ function App() {
         setGameState('START');
       }
     } catch (err) {
+      playSound('damage');
       setAuthError(err.response?.data?.error || 'Auth system offline.');
     }
   };
@@ -80,6 +124,7 @@ function App() {
 
   // --- GAMEPLAY ENGINE ---
   const startGame = async () => {
+    playSound('submit');
     setGameState('LOADING');
     setLogs([]);
     try {
@@ -108,6 +153,7 @@ function App() {
   const handleSubmit = async () => {
     if (!code || isExecuting) return;
     setIsExecuting(true);
+    playSound('submit'); // The laser blast!
     addLog('system', 'Compiling local source code...');
 
     try {
@@ -119,6 +165,7 @@ function App() {
       setHp(report.hpRemaining);
 
       if (report.status === 'VICTORY') {
+        playSound('submit'); // High beep for success
         addLog('victory', report.message);
         setFloor(report.currentFloor);
         
@@ -132,12 +179,14 @@ function App() {
           }, 2000);
         }
       } else {
+        playSound('damage'); // Oof, took a hit
         addLog('damage', report.message);
         if (report.status === 'GAME_OVER') {
           setTimeout(() => setGameState('GAME_OVER'), 2000);
         }
       }
     } catch (err) {
+      playSound('damage');
       addLog('damage', 'Buffer overflow: Request failed.');
     } finally {
       setIsExecuting(false);
@@ -198,7 +247,7 @@ function App() {
         <p style={{ fontSize: '1.5rem', marginBottom: '2rem', marginTop: 0 }}>
           {won ? 'Algorithms optimized. Massive XP awarded.' : `You reached Floor ${floor}. Your XP has been saved.`}
         </p>
-        <button className="submit-btn" onClick={() => setGameState('START')}>
+        <button className="submit-btn" onClick={() => { playSound('submit'); setGameState('START'); }}>
           {won ? 'PLAY AGAIN' : 'REBOOT SEQUENCE'}
         </button>
       </div>
