@@ -1,0 +1,13 @@
+# Node Modules (Too heavy to upload)
+node_modules/
+algocrawler-backend/node_modules/
+algocrawler-frontend/node_modules/
+
+# Security / Environment Variables (NEVER UPLOAD THESE)
+.env
+algocrawler-backend/.env
+algocrawler-frontend/.env
+
+# Build files
+dist/
+algocrawler-frontend/dist/
