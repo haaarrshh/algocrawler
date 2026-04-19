@@ -1,4 +1,4 @@
-// seed.js
+
 require('dotenv').config();
 const mongoose = require('mongoose');
 const Problem = require('./models/Problem');

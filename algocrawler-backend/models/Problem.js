@@ -12,7 +12,7 @@ const problemSchema = new mongoose.Schema({
   promptText: { type: String, required: true },
   boilerplateCode: { type: String, required: true },
   testCases: [testCaseSchema],
-  asciiArt: { type: String, required: true } // Multi-line escaped string for UI rendering
+  asciiArt: { type: String, required: true } 
 });
 
 module.exports = mongoose.model('Problem', problemSchema);

@@ -5,7 +5,7 @@ const activeRunSchema = new mongoose.Schema({
   currentFloor: { type: Number, default: 1 },
   currentHP: { type: Number, required: true },
   inventory: [{ type: String }],
-  mapSeed: { type: String, required: true } // Used to generate the deterministic path
+  mapSeed: { type: String, required: true } 
 });
 
 module.exports = mongoose.model('ActiveRun', activeRunSchema);

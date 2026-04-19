@@ -1,4 +1,4 @@
-/* --- ALGOCRAWLER OS : PROFESSIONAL TERMINAL THEME --- */
+
 
 *, *::before, *::after {
   box-sizing: border-box;
@@ -21,11 +21,11 @@ body {
   font-family: 'Courier New', Courier, monospace;
 }
 
-/* --- THE CRT MONITOR EFFECT --- */
+
 .battle-container {
   display: flex;
   height: 100vh;
-  width: 100%; /* CRITICAL FIX: Prevents horizontal scroll */
+  width: 100%; 
   padding: 15px;
   gap: 15px;
   position: relative;
@@ -44,7 +44,7 @@ body {
   pointer-events: none; 
 }
 
-/* --- PANELS --- */
+
 .encounter-panel, .editor-panel {
   flex: 1;
   display: flex;
@@ -56,7 +56,7 @@ body {
   z-index: 10;
 }
 
-/* --- TYPOGRAPHY & LAYOUT --- */
+
 h1, h2, h3 {
   text-transform: uppercase;
   margin-top: 0;
@@ -98,7 +98,7 @@ h1, h2, h3 {
   line-height: 1.4;
 }
 
-/* --- UI ELEMENTS --- */
+
 .action-bar {
   display: flex;
   justify-content: space-between;
@@ -133,7 +133,7 @@ h1, h2, h3 {
   cursor: not-allowed;
 }
 
-/* --- COMBAT LOG --- */
+
 .combat-log {
   height: 160px;
   background: var(--bg-color);
@@ -149,7 +149,7 @@ h1, h2, h3 {
 .log-damage { color: var(--text-danger); text-shadow: 0 0 3px var(--text-danger); }
 .log-system { color: #888; }
 
-/* --- AUTHENTICATION --- */
+
 .auth-form {
   display: flex;
   flex-direction: column;
@@ -175,7 +175,7 @@ h1, h2, h3 {
 .auth-error { color: var(--text-danger); font-size: 0.9rem; text-align: center; }
 .text-btn { background: none; border: none; color: #888; cursor: pointer; font-family: inherit; margin-top: 10px; text-decoration: underline; z-index: 10;}
 
-/* --- ANIMATIONS & SCROLLBARS --- */
+
 @keyframes crt-flicker {
   0% { opacity: 0.98; }
   5% { opacity: 0.95; }

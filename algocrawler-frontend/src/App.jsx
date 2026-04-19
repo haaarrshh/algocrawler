@@ -3,10 +3,10 @@ import Editor from '@monaco-editor/react';
 import axios from 'axios';
 import './App.css';
 
-// --- SUB-COMPONENT: RETRO SYNTHESIZER ---
+
 const playSound = (type) => {
-  // Browsers require a user interaction before they allow sound, 
-  // which is handled since the user has to click "Login" or "Start"!
+   
+  
   const AudioContext = window.AudioContext || window.webkitAudioContext;
   if (!AudioContext) return;
   
@@ -18,7 +18,7 @@ const playSound = (type) => {
   gain.connect(ctx.destination);
 
   if (type === 'type') {
-    // Mechanical keyboard "tick"
+    
     osc.type = 'square';
     osc.frequency.setValueAtTime(400, ctx.currentTime);
     osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.05);
@@ -27,7 +27,7 @@ const playSound = (type) => {
     osc.start();
     osc.stop(ctx.currentTime + 0.05);
   } else if (type === 'submit') {
-    // Laser / Power-up sound
+    
     osc.type = 'sawtooth';
     osc.frequency.setValueAtTime(150, ctx.currentTime);
     osc.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.2);
@@ -36,7 +36,7 @@ const playSound = (type) => {
     osc.start();
     osc.stop(ctx.currentTime + 0.2);
   } else if (type === 'damage') {
-    // 8-bit Crunch / Buzz
+    
     osc.type = 'square';
     osc.frequency.setValueAtTime(100, ctx.currentTime);
     osc.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.3);
@@ -47,7 +47,7 @@ const playSound = (type) => {
   }
 };
 
-// --- SUB-COMPONENT: TYPEWRITER LOG ---
+
 const TypewriterLog = ({ text, type }) => {
   const [displayedText, setDisplayedText] = useState("");
   
@@ -55,7 +55,7 @@ const TypewriterLog = ({ text, type }) => {
     let i = 0;
     const interval = setInterval(() => {
       setDisplayedText(text.slice(0, i));
-      if (i % 2 === 0) playSound('type'); // Play a tick every other letter
+      if (i % 2 === 0) playSound('type'); 
       i++;
       if (i > text.length) clearInterval(interval);
     }, 20);
@@ -66,7 +66,7 @@ const TypewriterLog = ({ text, type }) => {
 };
 
 function App() {
-  // --- STATE MANAGEMENT ---
+  
   const [token, setToken] = useState(localStorage.getItem('crawler_token'));
   const [username, setUsername] = useState(localStorage.getItem('crawler_user'));
   const [gameState, setGameState] = useState(token ? 'START' : 'AUTH'); 
@@ -92,12 +92,12 @@ function App() {
   const getAuthHeaders = () => ({ headers: { Authorization: `Bearer ${token}` } });
   const addLog = (type, text) => setLogs(prev => [...prev, { type, text }]);
 
-  // --- AUTHENTICATION LOGIC ---
+  
   const handleAuthSubmit = async (e) => {
     e.preventDefault();
     setAuthError('');
     const endpoint = authMode === 'LOGIN' ? '/api/auth/login' : '/api/auth/register';
-    playSound('submit'); // UI interaction sound
+    playSound('submit'); 
     try {
       const res = await axios.post(`http://localhost:5000${endpoint}`, authForm);
       if (authMode === 'REGISTER') {
@@ -122,7 +122,7 @@ function App() {
     setGameState('AUTH');
   };
 
-  // --- GAMEPLAY ENGINE ---
+  
   const startGame = async () => {
     playSound('submit');
     setGameState('LOADING');
@@ -153,7 +153,7 @@ function App() {
   const handleSubmit = async () => {
     if (!code || isExecuting) return;
     setIsExecuting(true);
-    playSound('submit'); // The laser blast!
+    playSound('submit'); 
     addLog('system', 'Compiling local source code...');
 
     try {
@@ -165,7 +165,7 @@ function App() {
       setHp(report.hpRemaining);
 
       if (report.status === 'VICTORY') {
-        playSound('submit'); // High beep for success
+        playSound('submit'); 
         addLog('victory', report.message);
         setFloor(report.currentFloor);
         
@@ -179,7 +179,7 @@ function App() {
           }, 2000);
         }
       } else {
-        playSound('damage'); // Oof, took a hit
+        playSound('damage'); 
         addLog('damage', report.message);
         if (report.status === 'GAME_OVER') {
           setTimeout(() => setGameState('GAME_OVER'), 2000);
@@ -193,7 +193,7 @@ function App() {
     }
   };
 
-  // --- RENDER SCREENS ---
+
   if (gameState === 'AUTH') {
     return (
       <div className="battle-container" style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
@@ -254,7 +254,7 @@ function App() {
     );
   }
 
-  // --- MAIN COMBAT LOOP ---
+  
   return (
     <div className="battle-container">
       <div className="encounter-panel">

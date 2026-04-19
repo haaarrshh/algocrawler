@@ -5,15 +5,12 @@ const ActiveRun = require('../models/ActiveRun');
 const User = require('../models/User');
 const requireAuth = require('../middleware/requireAuth');
 
-/**
- * THE SIMULATED MVP ENGINE
- * Fakes a compilation delay and passes the code as long as it isn't empty or "pass"
- */
+
 const simulateSecureExecution = async (code, testCases) => {
-  // Simulate network/compilation delay for the terminal aesthetic
+
   await new Promise(resolve => setTimeout(resolve, 1500));
 
-  // Basic MVP validation
+
   if (!code || code.length < 15 || code.includes('pass')) {
     return {
       success: false,
@@ -23,7 +20,7 @@ const simulateSecureExecution = async (code, testCases) => {
     };
   }
 
-  // If it passes basic checks, assume victory!
+  
   return {
     success: true,
     passedCount: testCases.length,
@@ -32,7 +29,7 @@ const simulateSecureExecution = async (code, testCases) => {
   };
 };
 
-// POST /api/execute
+
 router.post('/', requireAuth, async (req, res) => {
   try {
     const { runId, problemId, code } = req.body;
@@ -43,7 +40,7 @@ router.post('/', requireAuth, async (req, res) => {
     const problem = await Problem.findById(problemId);
     if (!problem) return res.status(404).json({ error: "Problem not found" });
 
-    // Call the simulated engine
+    
     const executionResult = await simulateSecureExecution(code, problem.testCases);
 
     let combatReport = {};
@@ -52,13 +49,13 @@ router.post('/', requireAuth, async (req, res) => {
       run.currentFloor += 1;
       await run.save();
 
-      // SCORE MEMORY: Massive XP for beating the dungeon
+      
       if (run.currentFloor > 3) {
         const user = await User.findById(run.userId);
         user.totalXP += 500; 
         await user.save();
 
-        // 🐛 THE FIX: Destroy the save file so the player can start fresh!
+        
         await ActiveRun.findByIdAndDelete(run._id); 
       }
 
@@ -76,12 +73,12 @@ router.post('/', requireAuth, async (req, res) => {
       if (run.currentHP <= 0) {
         run.currentHP = 0;
         
-        // SCORE MEMORY: Save XP based on floors survived
+        
         const user = await User.findById(run.userId);
         user.totalXP += (run.currentFloor * 50); 
         await user.save();
 
-        // 🐛 THE FIX: Destroy the save file if the player dies
+        
         await ActiveRun.findByIdAndDelete(run._id);
 
         combatReport = {
